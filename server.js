@@ -79,7 +79,7 @@ app.get('/match/:token/sync', function (req, res) {
                 rcvage: 1,
                 fragment: parseInt(state.fragment),
                 signup_fragment: parseInt(start),
-                tps: 128,
+                tps: 32,
                 protocol: 4};
       console.log(r)
       res.send(r);
