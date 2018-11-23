@@ -74,7 +74,8 @@ app.get('/match/:token/sync', function (req, res) {
     db.get(req.params.token+'-started', (err, start) => {
       if (err) return res.status(404).send("not found");
       console.log(start)
-      const r = {tick: parseInt(state.tick),
+      //const r = {tick: parseInt(state.tick),
+	  const r = {tick: parseInt(currenttick),
                 rtdelay: 1,
                 rcvage: 1,
                 fragment: parseInt(state.fragment),
@@ -110,7 +111,13 @@ app.post('/:token/:fragment_number/:frametype', function (req, res) {
        //setTimeout(() => {
          frame_buffer_put(req.params.token, req.params.fragment_number, req.query.tick);
          console.log("Fragment", req.params.fragment_number, "for tick", req.query.tick);
+		 currenttick = req.query.endtick;
        //}, 5000);
+     }
+	 if (req.params.frametype == 'delta') {
+         frame_buffer_put(req.params.token, req.params.fragment_number, req.query.endtick);
+         console.log("Fragment", req.params.fragment_number, "for tick", req.query.endtick);
+		 currenttick = req.query.endtick;
      }
      res.status(200).send("OK");
    });
