@@ -18,6 +18,8 @@ var frags_full:Itoken = {};
 var frags_start:Itoken = {};
 
 app.use(bodyParser.raw({ type:'*/*' }));
+app.use(bodyParser.urlencoded({ limit:'512mb',extended: true }));
+app.use(bodyParser.json({limit: '512mb'}));
 app.set('view engine', 'pug')
 app.get('/', function (req, res) {
 	res.render('index', {
@@ -29,6 +31,7 @@ app.get('/', function (req, res) {
 
 app.get('/match/:token/:fragment_number/:frametype', function (req, res) {
   var p:any = "";
+  console.log(req.params.fragment_number)
   res.setHeader('Content-Type', 'application/octet-stream')
   switch(req.params.frametype){
     case 'delta':
@@ -57,7 +60,8 @@ app.get('/match/:token/sync', function (req:any, res:any) {
     tick: latestfrag.tick,
     rtdelay: 1,
     rcvage: 1,
-    fragment: latestfrag.fragment,
+    //fragment: latestfrag.fragment,
+    fragment: latestfrag.signup_fragment,
     signup_fragment: latestfrag.signup_fragment,
     tps: latestfrag.tps,
     protocol: latestfrag.protocol
@@ -95,8 +99,8 @@ var latestfrag:latest = {
 app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
   req.setEncoding('utf8');
   //db.get(req.params.token+'-started', function (err:any, value:any) {
-    if (!latestfrag.signup_fragment) {
-      //return res.status(205).send("reset");
+    if (latestfrag.signup_fragment == 0) {
+      return res.status(205).send("reset");
     }
      //const p = createWriteStream('datas/'+req.params.token+'_'+req.params.fragment_number+'_'+req.params.frametype);
      //req.pipe(p)
@@ -131,7 +135,10 @@ app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
           latestfrag.tick = req.query.tick
         }
         if(req.params.fragment_number){
-          frags_full[req.params.fragment_number] = req 
+          frags_full[req.params.fragment_number] = req
+          if(latestfrag.signup_fragment == 0){
+            latestfrag.signup_fragment = req.params.fragment_number; 
+          }
         }
        }
        if (req.params.frametype == 'delta') {
