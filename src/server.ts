@@ -5,66 +5,55 @@ import { types } from 'util';
 import bodyParser = require('body-parser');
 const concat = require('concat-stream');
 
-interface Itoken{
-  [frag: string]: any;
-}
-interface anything{
-  [x:string]: any;
-}
-//var frags: Itoken = {};
+app.use(bodyParser.raw({ type: '*/*' ,limit:'512mb'}));
+app.use(bodyParser.urlencoded({ limit: '512mb', extended: true }));
+app.use(bodyParser.json({ limit: '512mb'}));
 
-var frags_delta:Itoken = {};
-var frags_full:Itoken = {};
-var frags_start:Itoken = {};
-
-app.use(bodyParser.raw({ type:'*/*' }));
-app.use(bodyParser.urlencoded({ limit:'512mb',extended: true }));
-app.use(bodyParser.json({limit: '512mb'}));
 app.set('view engine', 'pug')
 app.get('/', function (req, res) {
-	res.render('index', {
-		title: 'PROJECT TALOS WEB PANEL',
-		message: 'PROJECT TALOS WEB PANEL' ,
-	})
+  res.render('index', {
+    title: 'PROJECT TALOS WEB PANEL',
+    message: 'PROJECT TALOS WEB PANEL',
+  })
 })
 
 
 app.get('/match/:token/:fragment_number/:frametype', function (req, res) {
   var p:any = "";
   console.log(req.params.fragment_number)
-  res.setHeader('Content-Type', 'application/octet-stream')
-  switch(req.params.frametype){
+  //res.setHeader('Content-Type', 'application/octet-stream')
+  switch (req.params.frametype) {
     case 'delta':
-      p = frags_full[req.params.fragment_number];
+      p = fragdata[req.params.token].fragbody![req.params.fragment_number];
       console.log('DELTA')
       break;
     case 'full':
-    p = frags_full[req.params.fragment_number];
+      p = fragdata[req.params.token].fragbody![req.params.fragment_number];
       console.log('FULL')
       break;
     case 'start':
-    p = frags_start[req.params.fragment_number];
-    // res.send(new Buffer('wahoo'));
+      p = fragdata[req.params.token].fragbody![req.params.fragment_number];
       console.log('START')
       break;
     default:
       break;
   }
   console.log(p)
-  res.send(new Buffer(p["body"],'binary'));
+  res.status(200).send(p);
 })
 
-app.get('/match/:token/sync', function (req:any, res:any) {
+app.get('/match/:token/sync', function (req: any, res: any) {
   console.log("match sync!")
+  var token = req.params.token;
   const r = {
-    tick: latestfrag.tick,
+    tick: fragdata[req.params.token].tick,
     rtdelay: 1,
     rcvage: 1,
-    //fragment: latestfrag.fragment,
-    fragment: latestfrag.signup_fragment,
-    signup_fragment: latestfrag.signup_fragment,
-    tps: latestfrag.tps,
-    protocol: latestfrag.protocol
+    //fragment: fragdata[req.params.token].latestfrag,
+    fragment: 0,
+    signup_fragment: fragdata[req.params.token].signup_fragment,
+    tps: fragdata[req.params.token].tps,
+    protocol: fragdata[req.params.token].protocol
   }
   res.send(r);
   console.log(r)
@@ -77,84 +66,94 @@ app.post('/reset/:token/', (req, res) => {
   res.send("ACK");
 })
 
-interface latest{
-  starttick:number;
-  tick:number,
-  fragment:number,
-  signup_fragment:number,
-  tps:number,
-  protocol:number,
-  map:string
+var fragdata:Ifragdata = {};
+interface Ifragdata {
+  [token:string]:Imatchdata
 }
-var latestfrag:latest = {
-  starttick : 0,
-  tick : 0,
-  fragment : 0,
-  signup_fragment : 0,
-  tps : 0,
-  protocol : 4,
-  map : "de_dust2",
-};
+interface Imatchdata {
+  starttick: number
+  tick: number,
+  fragment: number,
+  signup_fragment: number,
+  tps: number,
+  protocol: number,
+  map: string,
+  fragbody?: any[],
+  latestfrag: number;
+}
 
-app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
+
+
+app.post('/:token/:fragment_number/:frametype', function (req: any, res: any) {
   req.setEncoding('utf8');
+  console.log(req)
   //db.get(req.params.token+'-started', function (err:any, value:any) {
-    if (latestfrag.signup_fragment == 0) {
-      return res.status(205).send("reset");
+  //const p = createWriteStream('datas/'+req.params.token+'_'+req.params.fragment_number+'_'+req.params.frametype);
+  //req.pipe(p)
+  //frags[req.params.token] = req;
+  //console.dir(req.body)
+  /*
+  console.log('query')
+  console.dir(req.query)
+  console.log('params')
+  console.dir(req.params)
+  */
+  console.log(`received ${req.params.frametype} for fragment ${req.params.fragment_number}, token ${req.params.token}`)
+  if (req.params.frametype == 'start') {
+    if(!fragdata[req.params.token]!){
+      fragdata[req.params.token] = {starttick:0,tick:0,fragment:0,signup_fragment:0,tps:32,protocol:4,map:"de_dust2",latestfrag:0,fragbody:[]}
     }
-     //const p = createWriteStream('datas/'+req.params.token+'_'+req.params.fragment_number+'_'+req.params.frametype);
-     //req.pipe(p)
-     //frags[req.params.token] = req;
-     //console.dir(req.body)
-     /*
-     console.log('query')
-     console.dir(req.query)
-     console.log('params')
-     console.dir(req.params)
-     */
-    console.log(`received ${req.params.frametype} for fragment ${req.params.fragment_number}, token ${req.params.token}`)
-       if (req.params.frametype == 'start') {
-        latestfrag.starttick = req.query.tick;
-        latestfrag.map = req.query.map;
-        latestfrag.tps = req.query.tps;
-        latestfrag.signup_fragment =  req.params.fragment_number;
-        latestfrag.protocol =  req.params.protocol;
-
-        if(req.body){
-          frags_start[req.params.fragment_number] = new Buffer(req.body.toString('binary'),'binary');;
-        }
-        
-         //set_started(req.params.token, req.params.fragment_number, req.headers['x-origin-auth']);
-         console.log("starting", req.params.token, "with fragment_number", req.params.fragment_number);
-       }
-       if (req.params.frametype == 'full') {
-        if(req.body){
-          frags_full[req.params.fragment_number] = new Buffer(req.body.toString('binary'),'binary');;
-        }
-        if(req.query.tick){
-          latestfrag.tick = req.query.tick
-        }
-        if(req.params.fragment_number){
-          frags_full[req.params.fragment_number] = req
-          if(latestfrag.signup_fragment == 0){
-            latestfrag.signup_fragment = req.params.fragment_number; 
-          }
-        }
-       }
-       if (req.params.frametype == 'delta') {
-        if(req.body){
-          frags_delta[req.params.fragment_number] = new Buffer(req.body.toString('binary'),'binary');;
-        }
+    fragdata[req.params.token].starttick = req.query.tick;
+    fragdata[req.params.token].map = req.query.map;
+    fragdata[req.params.token].tps = req.query.tps;
+    fragdata[req.params.token].signup_fragment = req.params.fragment_number;
+    fragdata[req.params.token].protocol = req.params.protocol;
+    fragdata[req.params.token].fragbody![req.params.fragment_number] = req.body as Buffer;
+    fragdata[req.params.token].latestfrag = req.params.fragment_number;
+    console.log("starting", req.params.token, "with fragment_number", req.params.fragment_number);
+  }
+  if (req.params.frametype == 'full') {
+    if(!fragdata[req.params.token]!){
+      fragdata[req.params.token] = {starttick:0,tick:0,fragment:0,signup_fragment:0,tps:32,protocol:4,map:"de_dust2",latestfrag:0,fragbody:[]}
+    }
+    else {
+      /*
+      if(!fragdata[req.params.token].signup_fragment){
+        res.status(205);
+        console.log('RESET CONTENT')
       }
-        if(req.query.endtick){
-          latestfrag.tick = req.query.endtick
-        }
-        if(req.params.fragment_number){
-          latestfrag.fragment = req.params.fragment_number;
-        }
-       
-     res.status(200).send("OK");
-   //});
+      else if(fragdata[req.params.token].signup_fragment == 0){
+        res.status(200).send("OK");
+      }
+      */
+      res.status(200).send("OK");
+      fragdata[req.params.token].fragbody![req.params.fragment_number] = req.body as Buffer;
+      fragdata[req.params.token].tick = req.query.tick;
+      fragdata[req.params.token].fragment = req.params.protocol;
+      fragdata[req.params.token].fragbody![req.params.fragment_number] = req.body as Buffer;
+      fragdata[req.params.token].latestfrag = req.params.fragment_number;
+      console.log("full", req.params.token, "with fragment_number", req.params.fragment_number);
+    }
+  }
+  if (req.params.frametype == 'delta') {
+    if(!fragdata[req.params.token]!){
+      fragdata[req.params.token] = {starttick:0,tick:0,fragment:0,signup_fragment:0,tps:32,protocol:4,map:"de_dust2",latestfrag:0,fragbody:[]}
+    }
+    /*
+    if(!fragdata[req.params.token].signup_fragment){
+      res.status(205);
+      console.log('RESET CONTENT')
+    }
+    else {
+      res.status(200).send("OK");
+    }
+    */
+   res.status(200).send("OK");
+    fragdata[req.params.token].fragbody![req.params.fragment_number] = req.body as Buffer;
+    fragdata[req.params.token].latestfrag = req.params.fragment_number;
+    console.log("delta", req.params.token, "with fragment_number", req.params.fragment_number);
+  }
+  //});
 });
 
 const port:number = 8080
