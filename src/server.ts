@@ -25,8 +25,10 @@ app.get('/match/:token/:fragment_number/:frametype', function (req, res) {
   console.log(p)
   if (typeof(p) == 'undefined') {
     res.status(404)
+    console.log('404!')
   }
   else {
+    console.log('200!')
     res.write(p, 'binary');
     //res.status(200).end(null, 'binary');
     res.end(null, 'binary');
