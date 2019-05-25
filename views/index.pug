@@ -12,11 +12,12 @@ body
         td auth
     tbody
       //{% for show in shows %}
-	  each match in matches
-      tr
-        th
-          a(href="steam://rungame/730/76561202255233023/+playcast%20%22http://csgo.joke-lan.net:3000/match/{{matches}}")
-            //{{show.token}}
-			//td({{show.timestamp}})
-			//td({{show.auth}})
-      //{% endfor %}
+      each val, key in matches
+        //li(class=key) !{val}
+        h1 #{value.fragment}
+        tr
+          th
+            a(href="steam://rungame/730/76561202255233023/+playcast%20%22http://csgo.joke-lan.net:3000/match/{{matches}}")
+              //{{show.token}}
+              //td({{show.timestamp}})
+              //td({{show.auth}})

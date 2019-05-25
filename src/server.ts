@@ -9,13 +9,13 @@ app.use(bodyParser.raw({ type: '*/*', limit: '512mb' }));
 //app.use(bodyParser.urlencoded({ limit: '512mb', extended: true }));
 //app.use(bodyParser.json({ limit: '512mb'}));
 
-var matches:number[];
+//var matches:number[];
 app.set('view engine', 'pug')
 app.get('/', function (req, res) {
   res.render('index', {
     title: 'CSGO BROADCAST WEB PANEL',
     message: 'CSGO BROADCAST WEB PANEL',
-    matches: matches,
+    matches: fragdata,
   })
 })
 
@@ -100,7 +100,8 @@ interface Imatchdata {
   full?: any[],
   delta?: any[],
   start?: any[],
-  latestfrag: number;
+  latestfrag: number,
+  auth?:any;
 }
 
 interface Idelaydata{
@@ -125,7 +126,7 @@ app.post('/:token/:fragment_number/:frametype', function (req, res) {
   {
 	  case 'start':
     if (!fragdata[req.params.token]!) {
-      fragdata[req.params.token] = { starttick: 0, tick: 0, fragment: 0, signup_fragment: -1, tps: 32, protocol: 4, map: "de_dust2", latestfrag: 0, full: [], start: [], delta: [] }
+      fragdata[req.params.token] = { starttick: 0, tick: 0, fragment: 0, signup_fragment: -1, tps: 32, protocol: 4, map: "de_dust2", latestfrag: 0, full: [], start: [], delta: [] ,auth: "initauth"}
     }
     fragdata[req.params.token].starttick = req.query.tick;
     fragdata[req.params.token].map = req.query.map;
@@ -134,9 +135,10 @@ app.post('/:token/:fragment_number/:frametype', function (req, res) {
     //fragdata[req.params.token].fragment = req.params.fragment_number;
     fragdata[req.params.token].protocol = req.query.protocol;
     fragdata[req.params.token].start![req.params.fragment_number] = req.body;
-    fragdata[req.params.token].latestfrag = req.params.fragment_number;
+    fragdata[req.params.token].latestfrag = req.params.fragment_number;	
+	fragdata[req.params.token].auth = req.headers['x-origin-auth'];
     //console.log("starting", req.params.token, "with fragment_number", req.params.fragment_number);
-	matches.push(req.params.token);
+	//matches.push(req.params.token);
 	break;
 	case "full":
 	  if (!fragdata[req.params.token]!) {
