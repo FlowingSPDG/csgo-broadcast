@@ -9,14 +9,13 @@ app.use(bodyParser.raw({ type: '*/*', limit: '512mb' }));
 //app.use(bodyParser.urlencoded({ limit: '512mb', extended: true }));
 //app.use(bodyParser.json({ limit: '512mb'}));
 
+var matches:number[];
 app.set('view engine', 'pug')
 app.get('/', function (req, res) {
   res.render('index', {
     title: 'CSGO BROADCAST WEB PANEL',
     message: 'CSGO BROADCAST WEB PANEL',
-    matches: {
-      
-    },
+    matches: matches,
   })
 })
 
@@ -65,11 +64,12 @@ app.get('/match/:token/sync', function (req: any, res: any) {
     tick: fragdata[req.params.token].tick,
     rtdelay: rtdelay, // 選択されたFULLフラグメントが受信されてからの秒数?
     //rtdelay: 30, // 選択されたFULLフラグメントが受信されてからの秒数?
-    rcvage: rcvage, // サーバが最新のFULLフラグメントを受信して​​からの秒数
+    rcvage: parseInt(rcvage), // サーバが最新のFULLフラグメントを受信して​​からの秒数
     //rcvage: 30, // サーバが最新のFULLフラグメントを受信して​​からの秒数
     fragment: fragment,
     signup_fragment: fragdata[req.params.token].signup_fragment,
-    tps: Math.trunc(fragdata[req.params.token].tps),
+    //tps: Math.trunc(parseInt(fragdata[req.params.token].tps)),
+	tps: Math.trunc(fragdata[req.params.token].tps),
     protocol: fragdata[req.params.token].protocol
   }
   res.send(r);
@@ -121,7 +121,9 @@ app.post('/:token/:fragment_number/:frametype', function (req, res) {
   req.setEncoding('utf8');
   //console.log(req)
   console.log(`received ${req.params.frametype} for fragment ${req.params.fragment_number}, token ${req.params.token}`)
-  if (req.params.frametype == 'start') {
+  switch(req.params.frametype)
+  {
+	  case 'start':
     if (!fragdata[req.params.token]!) {
       fragdata[req.params.token] = { starttick: 0, tick: 0, fragment: 0, signup_fragment: -1, tps: 32, protocol: 4, map: "de_dust2", latestfrag: 0, full: [], start: [], delta: [] }
     }
@@ -134,9 +136,10 @@ app.post('/:token/:fragment_number/:frametype', function (req, res) {
     fragdata[req.params.token].start![req.params.fragment_number] = req.body;
     fragdata[req.params.token].latestfrag = req.params.fragment_number;
     //console.log("starting", req.params.token, "with fragment_number", req.params.fragment_number);
-  }
-  if (req.params.frametype == 'full') {
-    if (!fragdata[req.params.token]!) {
+	matches.push(req.params.token);
+	break;
+	case "full":
+	  if (!fragdata[req.params.token]!) {
       fragdata[req.params.token] = { starttick: 0, tick: 0, fragment: 0, signup_fragment: -1, tps: 32, protocol: 4, map: "de_dust2", latestfrag: 0, full: [], start: [], delta: [] }
     }
     else {
@@ -161,8 +164,9 @@ app.post('/:token/:fragment_number/:frametype', function (req, res) {
         //console.log("full", req.params.token, "with fragment_number", req.params.fragment_number);
       }
     }
-  }
-  if (req.params.frametype == 'delta') {
+	break;
+
+  case 'delta':
     if (!fragdata[req.params.token]!) {
       fragdata[req.params.token] = { starttick: 0, tick: 0, fragment: 0, signup_fragment: -1, tps: 32, protocol: 4, map: "de_dust2", latestfrag: 0, full: [], start: [], delta: [] }
     }
@@ -171,8 +175,10 @@ app.post('/:token/:fragment_number/:frametype', function (req, res) {
     //fragdata[req.params.token].latestfrag = req.params.fragment_number;
     //fragdata[req.params.token].fragment = req.params.fragment_number;
     //console.log("delta", req.params.token, "with fragment_number", req.params.fragment_number);
-  }
   //});
+  break;
+}
+
 });
 
 const port: number = 8080
