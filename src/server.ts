@@ -19,7 +19,7 @@ app.get('/', (req: any, res: any) => {
 
 
 app.get('/replay/:token/sync', function (req:any, res:any) {
-  console.log("match sync!")
+  console.log("replay sync!")
   var sync = match[req.params.token].sync
   var r_sync = match[req.params.token].firstsync
   const r = {
@@ -58,8 +58,6 @@ app.get('/replay/:token/:fragment_number/:frametype', function (req:any, res:any
     res.end(null, 'binary');
   }
 })
-
-
 
 //  playcast "http://586f7685.ngrok.io/match/s85568392920768736t1477086968"
 app.post('/reset/:token/', (req:any, res:any) => {
