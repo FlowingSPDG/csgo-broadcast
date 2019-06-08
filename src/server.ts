@@ -3,6 +3,8 @@ const app = express();
 import * as bodyParser from 'body-parser'
 import('date-utils')
 
+const config = require('./config')
+
 app.use(bodyParser.raw({ type: '*/*', limit: '512mb' }));
 app.set('view engine', 'pug')
 
@@ -93,10 +95,15 @@ class match_sync{
 var match:any = {}
 
 app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
-  //console.log(req.body)
+  //console.log(req)
   if (req.params.token.indexOf("s1t") != -1) {
-    console.log("pure frag detected");
-    return ;
+    console.log("s1n frag detected");
+    return;
+  }
+  if (config.EnableAuth) {
+    if (req.headers["x-origin-auth"] != config.auth) {
+      return;
+    }
   }
   if (!match[req.params.token]) {
     match[req.params.token] = new Matches();
