@@ -12,12 +12,30 @@ app.get('/', (req: any, res: any) => {
   res.render('plays', {
     'title': 'CSGO tv_broadcast server',
     'matches': match,
-    'url':"http://localhost:3000/"
+    'url_play': "http://localhost:3000/match/",
+    'url_replay':"http://localhost:3000/replay/"
   });
 });
 
 
-app.get('/match/:token/:fragment_number/:frametype', function (req:any, res:any) {
+app.get('/replay/:token/sync', function (req:any, res:any) {
+  console.log("match sync!")
+  var sync = match[req.params.token].sync
+  var r_sync = match[req.params.token].firstsync
+  const r = {
+    tick: r_sync.tick,
+    rtdelay: sync.rtdelay,
+    rcvage: sync.rcvage,
+    fragment: r_sync.fragment,
+    signup_fragment: sync.signup_fragment,
+    tps: sync.tps,
+    protocool: sync.protocool,
+  }
+  //console.log(r)
+  res.send(r);
+})
+
+app.get('/replay/:token/:fragment_number/:frametype', function (req:any, res:any) {
   console.log('Fragment request for',req.params.fragment_number)
   res.setHeader('Content-Type', 'application/octet-stream')
   var p = Buffer.alloc(16, 0, 'binary');
@@ -41,12 +59,7 @@ app.get('/match/:token/:fragment_number/:frametype', function (req:any, res:any)
   }
 })
 
-app.get('/match/:token/sync', function (req:any, res:any) {
-  console.log("match sync!")
-  const r = match[req.params.token].sync
-  //console.log(r)
-  res.send(r);
-})
+
 
 //  playcast "http://586f7685.ngrok.io/match/s85568392920768736t1477086968"
 app.post('/reset/:token/', (req:any, res:any) => {
@@ -57,6 +70,7 @@ app.post('/reset/:token/', (req:any, res:any) => {
 
 class Matches{
   sync: match_sync
+  firstsync: replay_sync // sync for replay
   start:any = []
   full:any = []
   delta: any = []
@@ -65,6 +79,7 @@ class Matches{
   
   constructor() {
     this.sync = new match_sync();
+    this.firstsync = new replay_sync();
     this.start[-1] = Buffer.alloc(16, 0, "binary")
     this.full[-1] = Buffer.alloc(16, 0, "binary")
     this.delta[-1] = Buffer.alloc(16, 0, "binary")
@@ -92,11 +107,52 @@ class match_sync{
     this.protocool = 4
   }
 }
-var match:any = {}
+
+class replay_sync{
+  tick: number
+  fragment: number
+
+  constructor() {
+    this.tick = -1
+    this.fragment = -1  }
+}
+
+var match: any = {}
+
+app.get('/match/:token/sync', function (req:any, res:any) {
+  console.log("match sync!")
+  const r = match[req.params.token].sync
+  //console.log(r)
+  res.send(r);
+})
+
+app.get('/match/:token/:fragment_number/:frametype', function (req:any, res:any) {
+  console.log('Fragment request for',req.params.fragment_number)
+  res.setHeader('Content-Type', 'application/octet-stream')
+  var p = Buffer.alloc(16, 0, 'binary');
+  if (req.params.frametype == 'start') {
+    p = match[req.params.token].start[req.params.fragment_number]
+  }
+  if (req.params.frametype == 'delta') {
+    p = match[req.params.token].delta[req.params.fragment_number]
+  }
+  if (req.params.frametype == 'full') {
+    p = match[req.params.token].full[req.params.fragment_number]
+  }
+  if (!p) {
+    //console.log(p)
+    res.send(404);
+  }
+  else {
+    //console.log(p)
+    res.write(p, 'binary');
+    res.end(null, 'binary');
+  }
+})
 
 app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
   //console.log(req)
-  if (req.params.token.indexOf("s1t") != -1) {
+  if (config.DropS1Frag && req.params.token.indexOf("s1t") != -1) {
     console.log("s1n frag detected");
     return;
   }
@@ -125,6 +181,9 @@ app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
       //}
       if(req.query.tick){
         match[req.params.token].sync.tick = req.query.tick
+        if (match[req.params.token].firstsync.tick == -1) {
+          match[req.params.token].firstsync.tick = req.query.tick
+        }
       }
       if(req.query.tps){
         match[req.params.token].sync.tps = req.query.tps
@@ -132,11 +191,14 @@ app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
       if (req.params.frametype == 'full') {
         match[req.params.token].sync.fragment = req.params.fragment_number
         match[req.params.token].full[req.params.fragment_number] = req.body
+        if (match[req.params.token].firstsync.fragment == -1) {
+          match[req.params.token].firstsync.fragment = req.params.fragment_number
+        }
+        if (req.params.frametype == 'delta') {
+          match[req.params.token].delta[req.params.fragment_number] = req.body
+        }
+        res.status(200).send("OK");
       }
-      if (req.params.frametype == 'delta') {
-        match[req.params.token].delta[req.params.fragment_number] = req.body
-      }
-      res.status(200).send("OK");
     }
   }
 })

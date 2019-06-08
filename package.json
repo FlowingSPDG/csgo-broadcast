@@ -4,7 +4,7 @@
   "description": "CS:GO tv_broadcast server",
   "main": "dist/server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js  --max-old-space-size=4096"
   },
   "author": "Teemu Heikkilä,Shugo Kawamura",
   "license": "MIT",

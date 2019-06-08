@@ -11,6 +11,8 @@ body
       each item in matches
         tr
           th
-            a(href=`${url+item.token}`) Play
+            a(href=`steam://rungame/730/76561202255233023/+playcast%20%22${url_play+item.token}`) Play
+          th
+            a(href=`steam://rungame/730/76561202255233023/+playcast%20%22${url_replay+item.token}`) Replay
           td=item.time
           td=item.token
