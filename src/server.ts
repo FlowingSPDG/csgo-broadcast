@@ -94,6 +94,10 @@ var match:any = {}
 
 app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
   //console.log(req.body)
+  if (req.params.token.indexOf("s1t") != -1) {
+    console.log("pure frag detected");
+    return ;
+  }
   if (!match[req.params.token]) {
     match[req.params.token] = new Matches();
   }
