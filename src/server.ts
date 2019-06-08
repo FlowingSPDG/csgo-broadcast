@@ -63,9 +63,9 @@ app.get('/match/:token/sync', function (req: any, res: any) {
   const r = {
     tick: fragdata[req.params.token].tick,
     rtdelay: rtdelay, // 選択されたFULLフラグメントが受信されてからの秒数?
-    //rtdelay: 30, // 選択されたFULLフラグメントが受信されてからの秒数?
+    //rtdelay: 1, // 選択されたFULLフラグメントが受信されてからの秒数?
     rcvage: parseInt(rcvage), // サーバが最新のFULLフラグメントを受信して​​からの秒数
-    //rcvage: 30, // サーバが最新のFULLフラグメントを受信して​​からの秒数
+    //rcvage: 1, // サーバが最新のFULLフラグメントを受信して​​からの秒数
     fragment: fragment,
     signup_fragment: fragdata[req.params.token].signup_fragment,
     //tps: Math.trunc(parseInt(fragdata[req.params.token].tps)),
