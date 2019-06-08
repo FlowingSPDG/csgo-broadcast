@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express();
 import * as bodyParser from 'body-parser'
+import('date-utils')
 
 app.use(bodyParser.raw({ type: '*/*', limit: '512mb' }));
 app.set('view engine', 'pug')
@@ -57,7 +58,8 @@ class Matches{
   start:any = []
   full:any = []
   delta: any = []
-  token:string
+  token: string
+  time: string;
   
   constructor() {
     this.sync = new match_sync();
@@ -65,6 +67,7 @@ class Matches{
     this.full[-1] = Buffer.alloc(16, 0, "binary")
     this.delta[-1] = Buffer.alloc(16, 0, "binary")
     this.token = ""
+    this.time = new Date().toJSON()
   }
 }
 
