@@ -121,8 +121,6 @@ app.post('/:token/:fragment_number/:frametype', function (req, res) {
   }
 })
 
-
-
 app.listen(3000, function () {
   console.log('CSGO broadcast server listening on port 3000!');
 });
