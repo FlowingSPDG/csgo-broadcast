@@ -1,0 +1,14 @@
+head
+  title #{title}
+body
+  table
+    thead
+      tr
+        th Play
+        td timestamp
+        td token
+    tbody
+      each item in matches
+        tr
+          th
+            a(href=`${url+item.token}`) Play

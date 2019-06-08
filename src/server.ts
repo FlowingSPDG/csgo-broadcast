@@ -5,6 +5,15 @@ import * as bodyParser from 'body-parser'
 app.use(bodyParser.raw({ type: '*/*', limit: '512mb' }));
 app.set('view engine', 'pug')
 
+app.get('/', (req: any, res: any) => {
+  res.render('plays', {
+    'title': 'CSGO tv_broadcast server',
+    'matches': match,
+    'url':"http://localhost:3000/"
+  });
+});
+
+
 app.get('/match/:token/:fragment_number/:frametype', function (req:any, res:any) {
   console.log('Fragment request for',req.params.fragment_number)
   res.setHeader('Content-Type', 'application/octet-stream')
@@ -48,12 +57,14 @@ class Matches{
   start:any = []
   full:any = []
   delta: any = []
+  token:string
   
   constructor() {
     this.sync = new match_sync();
     this.start[-1] = Buffer.alloc(16, 0, "binary")
     this.full[-1] = Buffer.alloc(16, 0, "binary")
     this.delta[-1] = Buffer.alloc(16, 0, "binary")
+    this.token = ""
   }
 }
 
@@ -87,6 +98,7 @@ app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
   if (req.params.frametype == "start") {
     match[req.params.token].sync.signup_fragment = req.params.fragment_number
     match[req.params.token].start[req.params.fragment_number] = req.body
+    match[req.params.token].token = req.params.token
   }
   else {
     if (match[req.params.token].sync.signup_fragment == -1) {
