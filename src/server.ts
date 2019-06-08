@@ -189,15 +189,16 @@ app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
         match[req.params.token].sync.tps = req.query.tps
       }
       if (req.params.frametype == 'full') {
+        res.status(200).send("OK");
         match[req.params.token].sync.fragment = req.params.fragment_number
         match[req.params.token].full[req.params.fragment_number] = req.body
         if (match[req.params.token].firstsync.fragment == -1) {
           match[req.params.token].firstsync.fragment = req.params.fragment_number
         }
-        if (req.params.frametype == 'delta') {
-          match[req.params.token].delta[req.params.fragment_number] = req.body
-        }
+      }
+      if (req.params.frametype == 'delta') {
         res.status(200).send("OK");
+        match[req.params.token].delta[req.params.fragment_number] = req.body
       }
     }
   }
