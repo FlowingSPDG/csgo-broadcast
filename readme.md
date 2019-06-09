@@ -5,5 +5,5 @@
 -> web gui for administrating old archives  
 
 ## How to run
--> SRCDS :  `tv_broadcast_url "http:localhost:3000/";tv_broadcast 1" ` 
+-> SRCDS :  `tv_broadcast_url "http:localhost:3000/";tv_broadcast 1" `  
 -> Wait for match,replay will be available after tv_delay seconds  
