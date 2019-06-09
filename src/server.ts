@@ -11,6 +11,7 @@ app.use('/public', express.static(__dirname + '/../public'));
 console.log(__dirname + '/../public')
 
 app.get('/', (req: any, res: any) => {
+  res.set('Cache-Control', 'public, max-age=5'); // cache 5sec for replay frag
   res.render('plays', {
     'title': 'CSGO tv_broadcast server',
     'matches': match,
@@ -22,6 +23,7 @@ app.get('/', (req: any, res: any) => {
 
 app.get('/replay/:token/sync', function (req:any, res:any) {
   console.log("replay sync!")
+  res.set('Cache-Control', 'public, max-age=86400'); // cache 1day for replay sync
   var sync = match[req.params.token].sync
   var r_sync = match[req.params.token].firstsync
   const r = {
@@ -39,6 +41,7 @@ app.get('/replay/:token/sync', function (req:any, res:any) {
 
 app.get('/replay/:token/:fragment_number/:frametype', function (req:any, res:any) {
   console.log('Fragment request for',req.params.fragment_number)
+  res.set('Cache-Control', 'public, max-age=86400'); // cache 1day for replay frag
   res.setHeader('Content-Type', 'application/octet-stream')
   var p = Buffer.alloc(16, 0, 'binary');
   if (req.params.frametype == 'start') {
@@ -121,6 +124,7 @@ var match: any = {}
 
 app.get('/match/:token/sync', function (req:any, res:any) {
   console.log("match sync!")
+  res.set('Cache-Control', 'public, max-age=1'); // cache 1sec for delayed live
   const r = match[req.params.token].sync
   //console.log(r)
   res.send(r);
@@ -128,6 +132,7 @@ app.get('/match/:token/sync', function (req:any, res:any) {
 
 app.get('/match/:token/:fragment_number/:frametype', function (req:any, res:any) {
   console.log('Fragment request for',req.params.fragment_number)
+  res.set('Cache-Control', 'public, max-age=1'); // cache 1sec for delayed live
   res.setHeader('Content-Type', 'application/octet-stream')
   var p = Buffer.alloc(16, 0, 'binary');
   if (req.params.frametype == 'start') {
