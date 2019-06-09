@@ -14,9 +14,7 @@ app.get('/', (req: any, res: any) => {
   res.set('Cache-Control', 'public, max-age=5'); // cache 5sec for replay frag
   res.render('plays', {
     'title': 'CSGO tv_broadcast server',
-    'matches': match,
-    'url_play': "http://localhost:3000/match/",
-    'url_replay':"http://localhost:3000/replay/"
+    'matches': match
   });
 });
 
