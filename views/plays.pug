@@ -1,5 +1,7 @@
 head
   title #{title}
+  script(src="https://code.jquery.com/jquery-3.4.1.min.js")
+  script(src="./public/js/hostname.js ")
 body
   table
     thead
@@ -11,8 +13,8 @@ body
       each item in matches
         tr
           th
-            a(href=`steam://rungame/730/76561202255233023/+playcast%20%22${url_play+item.token}`) Play
+            a(id="a_match" href=`${url_play+item.token}`) Play
           th
-            a(href=`steam://rungame/730/76561202255233023/+playcast%20%22${url_replay+item.token}`) Replay
+            a(id="a_replay" href=`${url_replay+item.token}`) Replay
           td=item.time
           td=item.token

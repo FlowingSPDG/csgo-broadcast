@@ -7,6 +7,8 @@ const config = require('./config')
 
 app.use(bodyParser.raw({ type: '*/*', limit: '512mb' }));
 app.set('view engine', 'pug')
+app.use('/public', express.static(__dirname + '/../public'));
+console.log(__dirname + '/../public')
 
 app.get('/', (req: any, res: any) => {
   res.render('plays', {
