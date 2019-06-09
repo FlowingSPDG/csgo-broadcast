@@ -177,7 +177,7 @@ app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
   }
   else {
     if (match[req.params.token].sync.signup_fragment == -1) {
-      res.status(205);
+      res.status(205).send('RESET CONTENT');
       console.log('reset at type :', req.params.frametype)
     }
     else {
