@@ -13,8 +13,8 @@ body
       each item in matches
         tr
           th
-            a(id="a_match" href=`${item.token}`) Play
+            a(data-type="a_match" href=`${item.token}`) Play
           th
-            a(id="a_replay" href=`${item.token}`) Replay
+            a(data-type="a_replay" href=`${item.token}`) Replay
           td=item.time
           td=item.token
