@@ -7,7 +7,7 @@ function RewriteIp(element,prefix,postfix){ // aタグのリンクを現在の�
     element.attr("href", href + postfix)
 }
 
-var ip = location.href;
+const ip = location.href;
 var match = ip + "match/"
 var replay = ip + "replay/"
 

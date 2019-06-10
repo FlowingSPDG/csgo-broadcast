@@ -1,7 +1,5 @@
 head
   title #{title}
-  script(src="https://code.jquery.com/jquery-3.4.1.min.js")
-  script(src="./public/js/hostname.js ")
 body
   table
     thead
@@ -25,3 +23,21 @@ body
             a(data-type="a_replay-c" href=`${item.token}`) Replay-C
           td=item.time
           td=item.token
+      form(id="play_form")
+        label
+          span Match token : 
+          input(type="text", id="match_id", value="", placeholder="Insert Match token here")
+        br
+        label
+          span Frag Number : 
+          input(type="text", id="match_frag", value="", placeholder="Insert frag number here")
+        br
+        label
+          span Playcast command : 
+          input(readonly  type="text", id="match_command", placeholder="playcast \"http://gotv.cdn.example.com/MatchToken FragmentNumber\"")
+          button(type="button" onclick="CopyClipBoard()") COPY
+
+  script(src="https://code.jquery.com/jquery-3.4.1.min.js")
+  script(src="./public/js/hostname.js")
+  script(src="./public/js/match_play.js")
+  
