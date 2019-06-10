@@ -3,5 +3,5 @@ module.exports = {
     EnableAuth : false,
     auth: "SuperStrongPassword",
     DropS1Frag: false,
-    frag_delay: 4
+    frag_delay: 10
 }
