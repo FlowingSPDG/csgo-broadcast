@@ -14,11 +14,11 @@ var replay = ip + "match/"
 console.log(ip);
 
 $(function () {  
-    $('#a_match').each(function(index, element) {
-        RewriteIp($(element),match)
-    })
+    $("a[data-type='a_match']").each(function(i){
+        RewriteIp($(this),match)
+    });
 
-    $('#a_replay').each(function(index, element) {
-        RewriteIp($(element),replay)
-    })
+    $("a[data-type='a_replay']").each(function(i){
+        RewriteIp($(this),match)
+    });
 });
