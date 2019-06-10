@@ -127,7 +127,8 @@ class match_sync{
 
   public rcvage() {
     var now = new Date()
-    var last_full = this.full_received[this.fragment];
+    var i = this.fragment;
+    var last_full = this.full_received[i];
     var sec = ((now.getTime() - last_full.getTime()) / 1000);
     console.log(sec)
     return sec;
