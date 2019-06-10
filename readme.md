@@ -13,7 +13,7 @@ GOTV+,HTTP and dem based GOTV. Supports CDN,HLAE,Reshade and other external soft
 ### Installation
 1. `npm i`  
 2. `npm i -g typescript`  
-3. `build`  
+3. `npm run build`  
 
 ### Usage
 1. `npm start` to start tv_broadcast server  
