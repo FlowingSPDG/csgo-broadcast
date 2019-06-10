@@ -26,12 +26,14 @@ app.get('/replay/:token/sync', function (req:any, res:any) {
   var r_sync = match[req.params.token].firstsync
   const r = {
     tick: r_sync.tick,
-    rtdelay: sync.rtdelay,
-    rcvage: sync.rcvage,
+    //rtdelay: sync.rtdelay,
+    rtdelay: 2,
+    //rcvage: r_sync.rcvage,
+    rcvage: 2,
     fragment: r_sync.fragment,
     signup_fragment: sync.signup_fragment,
     tps: sync.tps,
-    protocool: sync.protocool,
+    protocol: sync.protocol,
   }
   //console.log(r)
   res.send(r);
@@ -65,18 +67,18 @@ app.get('/replay/:token/:fragment_number/:frametype', function (req:any, res:any
 //  playcast "http://586f7685.ngrok.io/match/s85568392920768736t1477086968"
 app.post('/reset/:token/', (req:any, res:any) => {
   res.send("ACK");
-  match[req.params.token].sync.signup_fragment = null;
+  match[req.params.token].sync.signup_fragment = -1;
 })
 
 
 class Matches{
-  sync: match_sync
-  firstsync: replay_sync // sync for replay
-  start:any = []
-  full:any = []
-  delta: any = []
-  token: string
-  time: string;
+  public sync: match_sync
+  public firstsync: replay_sync // sync for replay
+  public start:any = []
+  public full:any = []
+  public delta: any = []
+  public token: string
+  public time: string;
   
   constructor() {
     this.sync = new match_sync();
@@ -90,22 +92,45 @@ class Matches{
 }
 
 class match_sync{
-  tick: number
-  rtdelay: number
-  rcvage: number
-  fragment: number
-  signup_fragment: number
-  tps: number
-  protocool: number;
-
+  public tick: number
+  //public rtdelay: number
+  private _rtdelay: Date
+  private _rcvage: Date
+  public fragment: number
+  public signup_fragment: number
+  public tps: number
+  public protocol : number;
+  public full_received:any
+  
   constructor() {
     this.tick = -1
-    this.rtdelay = 2
-    this.rcvage = 2
+    this._rtdelay = new Date()
+    //this.rtdelay = 2
+    this._rcvage = new Date()
     this.fragment = -1
     this.signup_fragment = -1
     this.tps = 32
-    this.protocool = 4
+    this.protocol  = 4
+    this.full_received = {};
+  }
+
+  
+  public rtdelay() {
+    var now = new Date()
+    var i = this.fragment - config.frag_delay
+    var selected_full = this.full_received[i];
+    var sec = ((now.getTime() - selected_full.getTime()) / 1000);
+    console.log(sec)
+    return sec;
+  }
+  
+
+  public rcvage() {
+    var now = new Date()
+    var last_full = this.full_received[this.fragment];
+    var sec = ((now.getTime() - last_full.getTime()) / 1000);
+    console.log(sec)
+    return sec;
   }
 }
 
@@ -118,13 +143,25 @@ class replay_sync{
     this.fragment = -1  }
 }
 
-var match: any = {}
+var match: Imatches = {};
+interface Imatches{
+  [x:string]:Matches
+}
 
 app.get('/match/:token/sync', function (req:any, res:any) {
   console.log("match sync!")
   res.set('Cache-Control', 'public, max-age=1'); // cache 1sec for delayed live
-  const r = match[req.params.token].sync
-  //console.log(r)
+  var sync = match[req.params.token].sync
+  const r = {
+    tick: sync.tick,
+    rtdelay: sync.rtdelay(),
+    rcvage: sync.rcvage(),
+    fragment: sync.fragment - config.frag_delay,
+    signup_fragment: sync.signup_fragment,
+    tps: sync.tps,
+    protocol: sync.protocol,
+  }
+  console.log(r)
   res.send(r);
 })
 
@@ -195,6 +232,7 @@ app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
         res.status(200).send("OK");
         match[req.params.token].sync.fragment = req.params.fragment_number
         match[req.params.token].full[req.params.fragment_number] = req.body
+        match[req.params.token].sync.full_received[req.params.fragment_number] = new Date()
         if (match[req.params.token].firstsync.fragment == -1) {
           match[req.params.token].firstsync.fragment = req.params.fragment_number
         }
