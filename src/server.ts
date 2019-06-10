@@ -151,7 +151,7 @@ interface Imatches{
 
 app.get('/match/:token/sync', function (req:any, res:any) {
   console.log("match sync!")
-  res.set('Cache-Control', 'public, max-age=1'); // cache 1sec for delayed live
+  res.set('Cache-Control', 'public, max-age=5'); // cache 1sec for delayed live
   var sync = match[req.params.token].sync
   const r = {
     tick: sync.tick,
@@ -168,7 +168,7 @@ app.get('/match/:token/sync', function (req:any, res:any) {
 
 app.get('/match/:token/:fragment_number/:frametype', function (req:any, res:any) {
   console.log('Fragment request for',req.params.fragment_number)
-  res.set('Cache-Control', 'public, max-age=1'); // cache 1sec for delayed live
+  res.set('Cache-Control', 'public, max-age=86400'); // cache 1sec for delayed live
   res.setHeader('Content-Type', 'application/octet-stream')
   var p = Buffer.alloc(16, 0, 'binary');
   if (req.params.frametype == 'start') {
