@@ -100,7 +100,8 @@ class match_sync{
   public signup_fragment: number
   public tps: number
   public protocol : number;
-  public full_received:any
+  public full_received: any
+  public full_received_tick: any
   
   constructor() {
     this.tick = -1
@@ -112,12 +113,13 @@ class match_sync{
     this.tps = 32
     this.protocol  = 4
     this.full_received = {};
+    this.full_received_tick = {}
   }
 
   
-  public rtdelay() {
+  public rtdelay(i:number) {
     var now = new Date()
-    var i = this.fragment - config.frag_delay
+    //var i = this.fragment - config.frag_delay
     var selected_full = this.full_received[i];
     var sec = ((now.getTime() - selected_full.getTime()) / 1000);
     console.log(sec)
@@ -151,17 +153,33 @@ interface Imatches{
 
 app.get('/match/:token/sync', function (req:any, res:any) {
   console.log("match sync!")
-  res.set('Cache-Control', 'public, max-age=5'); // cache 1sec for delayed live
   var sync = match[req.params.token].sync
-  const r = {
-    tick: sync.tick,
-    rtdelay: sync.rtdelay(),
-    rcvage: sync.rcvage(),
-    fragment: sync.fragment - config.frag_delay,
-    signup_fragment: sync.signup_fragment,
-    tps: sync.tps,
-    protocol: sync.protocol,
+  var r: any;
+  res.set('Cache-Control', 'public, max-age=5'); // cache 5sec for delayed live
+  if (req.query.fragment) {
+    r = {
+      tick: sync.full_received_tick[req.query.fragment],
+      rtdelay: sync.rtdelay(req.query.fragment),
+      rcvage: sync.rcvage(),
+      fragment: req.query.fragment,
+      signup_fragment: sync.signup_fragment,
+      tps: sync.tps,
+      protocol: sync.protocol,
+    }
   }
+  else {
+    var frag = sync.fragment - config.frag_delay;
+    r = {
+      tick: sync.tick,
+      rtdelay: sync.rtdelay(frag),
+      rcvage: sync.rcvage(),
+      fragment: frag,
+      signup_fragment: sync.signup_fragment,
+      tps: sync.tps,
+      protocol: sync.protocol,
+    }
+  }
+  
   console.log(r)
   res.send(r);
 })
@@ -234,6 +252,7 @@ app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
         match[req.params.token].sync.fragment = req.params.fragment_number
         match[req.params.token].full[req.params.fragment_number] = req.body
         match[req.params.token].sync.full_received[req.params.fragment_number] = new Date()
+        match[req.params.token].sync.full_received_tick[req.params.fragment_number] = req.query.tick
         if (match[req.params.token].firstsync.fragment == -1) {
           match[req.params.token].firstsync.fragment = req.params.fragment_number
         }

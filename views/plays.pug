@@ -6,7 +6,10 @@ body
   table
     thead
       tr
-        th Play
+        th Play with Delay
+        th Replay
+        th Replay(A-arg f=1 with /sync)
+        th Replay(C-arg f=0 w/o /sync)
         td timestamp
         td token
     tbody
@@ -16,5 +19,9 @@ body
             a(data-type="a_match" href=`${item.token}`) Play
           th
             a(data-type="a_replay" href=`${item.token}`) Replay
+          th
+            a(data-type="a_replay-a" href=`${item.token}`) Replay-A
+          th
+            a(data-type="a_replay-c" href=`${item.token}`) Replay-C
           td=item.time
           td=item.token
