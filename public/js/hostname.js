@@ -29,4 +29,21 @@ $(function () {
     $("a[data-type='a_replay-c']").each(function(i){
         RewriteIp($(this),match,"%22%20c") // [" c"]
     });
+
+    replay_f(0);
+})
+
+$("th[data-type='a_replay-f']").children('input').keyup(function () {
+    replay_f($(this).val())
+    console.log($(this).val())
 });
+
+function replay_f(frag) {
+    $("th[data-type='a_replay-f']").each(function(i){
+        //console.log('test')
+        var token = $(this).children('a').attr("data-token")
+        var play = steamplay + match + token + "%22%20f" + frag
+        console.log(play)
+        $(this).children('a').attr("href",play)   
+    });
+}

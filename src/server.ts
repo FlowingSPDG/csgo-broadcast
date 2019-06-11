@@ -78,7 +78,8 @@ class Matches{
   public full:any = []
   public delta: any = []
   public token: string
-  public time: string;
+  public auth: string
+  public time: string
   
   constructor() {
     this.sync = new match_sync();
@@ -87,6 +88,7 @@ class Matches{
     this.full[-1] = Buffer.alloc(16, 0, "binary")
     this.delta[-1] = Buffer.alloc(16, 0, "binary")
     this.token = ""
+    this.auth = ""
     this.time = new Date().toJSON()
   }
 }
@@ -228,6 +230,7 @@ app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
     match[req.params.token].sync.signup_fragment = req.params.fragment_number
     match[req.params.token].start[req.params.fragment_number] = req.body
     match[req.params.token].token = req.params.token
+    match[req.params.token].auth = req.headers["x-origin-auth"]
   }
   else {
     if (match[req.params.token].sync.signup_fragment == -1) {
