@@ -11,17 +11,20 @@ body
   table
     thead
       tr
-        th Play w/Delay
+        td auth
+        td token
+        td time
+        th Play with delay
         th Replay
         th Replay-A (f=1 with /sync)
         th Replay-C (f=0 w/o /sync)
         th Replay-F (specific frag with /sync)
-        td time
-        td auth
-        td token
     tbody
       each item in matches
           tr
+            td=item.auth
+            td=item.token
+            td=item.time
             th
               a(data-type="a_match" href=`${item.token}`) Play
             th
@@ -33,9 +36,6 @@ body
             th(data-type="a_replay-f")
               a(href=`${item.token}` data-token=`${item.token}`) Replay-F 
               input(type="number" placeholder="frag number" data-type="a_replay-f-specify")
-            td=item.time
-            td=item.auth
-            td=item.token
 
   script(src="https://code.jquery.com/jquery-3.4.1.min.js")
   script(src="./public/js/hostname.js")
