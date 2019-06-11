@@ -1,6 +1,6 @@
 {
   "name": "csgobroadcast",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "CS:GO tv_broadcast server",
   "main": "dist/server.js",
   "scripts": {
