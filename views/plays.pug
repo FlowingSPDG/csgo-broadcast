@@ -1,20 +1,42 @@
 head
   title #{title}
-  script(src="https://code.jquery.com/jquery-3.4.1.min.js")
-  script(src="./public/js/hostname.js ")
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    // Compiled and minified CSS
+    link( rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css")
+    // Compiled and minified JavaScript
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js")
+    link(rel='stylesheet', href="css/style.css")
 body
   table
     thead
       tr
-        th Play
-        td timestamp
+        th Play w/Delay
+        th Replay
+        th Replay-A (f=1 with /sync)
+        th Replay-C (f=0 w/o /sync)
+        th Replay-F (specific frag with /sync)
+        td time
+        td auth
         td token
     tbody
       each item in matches
-        tr
-          th
-            a(id="a_match" href=`${item.token}`) Play
-          th
-            a(id="a_replay" href=`${item.token}`) Replay
-          td=item.time
-          td=item.token
+          tr
+            th
+              a(data-type="a_match" href=`${item.token}`) Play
+            th
+              a(data-type="a_replay" href=`${item.token}`) Replay
+            th
+              a(data-type="a_replay-a" href=`${item.token}`) Replay-A
+            th
+              a(data-type="a_replay-c" href=`${item.token}`) Replay-C
+            th(data-type="a_replay-f")
+              a(href=`${item.token}` data-token=`${item.token}`) Replay-F 
+              input(type="number" placeholder="frag number" data-type="a_replay-f-specify")
+            td=item.time
+            td=item.auth
+            td=item.token
+
+  script(src="https://code.jquery.com/jquery-3.4.1.min.js")
+  script(src="./public/js/hostname.js")
+  
