@@ -217,6 +217,10 @@ app.post('/:token/:fragment_number/:frametype', function (req:any, res:any) {
     console.log("s1n frag detected");
     return;
   }
+  if (req.params.token == "" && req.headers["x-origin-auth"] == "") {
+    console.log("Empty data");
+    return;
+  }
   if (config.EnableAuth) {
     if (req.headers["x-origin-auth"] != config.auth) {
       return;
