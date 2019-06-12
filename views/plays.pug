@@ -20,9 +20,48 @@ div(class="cp_tab")
       p NOTE : Those matches are provided by scrims on Japanese community 
         a(href="https://www.utage-csgo.com/") UTAGE
         |  public match server, and Project Hypnos.
+      p NOTE2 : You can use HLAE,Reshade,demoui command and turn sv_cheats on with GOTV+.
       p 以下に表示されるマッチは
         a(href="https://www.utage-csgo.com/") UTAGE
         |  の公開マッチサーバー、及びProject Hypnosから取得されています。
+      p GOTV+上ではHLAE,Reshade,demouiやsv_cheats関連コマンドなどが使用可能です。
+      ul
+        li 
+          b auth : 
+          | Match authencation string / マッチの認証に使用される文字列
+        li
+          b token : 
+          | Match server's token steamid / マッチサーバーのトークンSteamID
+        li
+          b time : 
+          | timstamp of when match starts / マッチが開始された時刻のタイムスタンプ
+        br
+        li
+          b Play with Delay : 
+          | Spec match with few delay / マッチを遅延付きで観戦する
+        br
+        li
+          b Replay : 
+          | Replay match from the beginning(First fragment of GOTV+ received).  implemented by GOTV+(this software) side.
+          | / マッチを最初(GOTV+が一番最初に受け取ったfragment)から再生する。  GOTV+側での実装。
+        li
+          b Replay-A : 
+          | Replay match from the beginning(frag 1 with /sync request).  implemented by CS:GO Client side.
+          | / マッチを最初(fragment1)から再生する(/syncリクエスト付き)。  CS:GOクライアント側での実装。
+        li
+          b Replay-C : 
+          | Replay match from the beginning(frag 0 without /sync request).  implemented by CS:GO Client side.
+          | / マッチを最初(fragment0)から再生する(/syncリクエスト無し)。  CS:GOクライアント側での実装。
+        li
+          b Replay-F : 
+          | Replay match from specific fragment with /sync request.  implemented by CS:GO Client side.
+          | / マッチを指定したfragmentから再生する(/syncリクエスト付き)  CS:GOクライアント側での実装。
+        li
+          b Replay-B : 
+          | Work-in-Progress...  (should) implemented by CS:GO Client side.
+          | / 未実装。  CS:GOクライアント側での実装(の予定)。
+
+
       table
         thead
           tr
@@ -31,9 +70,9 @@ div(class="cp_tab")
             td time
             th Play with delay
             th Replay
-            th Replay-A (f=1 with /sync)
-            th Replay-C (f=0 w/o /sync)
-            th Replay-F (specific frag with /sync)
+            th Replay-A
+            th Replay-C
+            th Replay-F
         tbody
           each item in matches
               tr
