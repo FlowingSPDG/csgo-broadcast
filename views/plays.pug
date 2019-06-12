@@ -6,36 +6,75 @@ head
   link( rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css")
   // Compiled and minified JavaScript
   script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js")
-  link(rel='stylesheet', href="css/style.css")
+  link(rel='stylesheet', href="./public/css/style.css")
 body
-  table
-    thead
-      tr
-        td auth
-        td token
-        td time
-        th Play with delay
-        th Replay
-        th Replay-A (f=1 with /sync)
-        th Replay-C (f=0 w/o /sync)
-        th Replay-F (specific frag with /sync)
-    tbody
-      each item in matches
+div(class="cp_tab")
+  input(type="radio" name="cp_tab" id="tab1_1" aria-controls="first_tab01" checked)
+  label(for="tab1_1") GOTV+
+  input(type="radio" name="cp_tab" id="tab1_2" aria-controls="second_tab01")
+  label(for="tab1_2") About GOTV+
+  input(type="radio" name="cp_tab" id="tab1_3" aria-controls="third_tab01")
+  label(for="tab1_3") Developer
+  div(class="cp_tabpanels")
+    div(id="first_tab01" class="cp_tabpanel")
+      table
+        thead
           tr
-            td=item.auth
-            td=item.token
-            td=item.time
-            th
-              a(data-type="a_match" href=`${item.token}`) Play
-            th
-              a(data-type="a_replay" href=`${item.token}`) Replay
-            th
-              a(data-type="a_replay-a" href=`${item.token}`) Replay-A
-            th
-              a(data-type="a_replay-c" href=`${item.token}`) Replay-C
-            th(data-type="a_replay-f")
-              a(href=`${item.token}` data-token=`${item.token}`) Replay-F 
-              input(type="number" placeholder="frag number" data-type="a_replay-f-specify")
+            td auth
+            td token
+            td time
+            th Play with delay
+            th Replay
+            th Replay-A (f=1 with /sync)
+            th Replay-C (f=0 w/o /sync)
+            th Replay-F (specific frag with /sync)
+        tbody
+          each item in matches
+              tr
+                td=item.auth
+                td=item.token
+                td=item.time
+                th
+                  a(data-type="a_match" href=`${item.token}`) Play
+                th
+                  a(data-type="a_replay" href=`${item.token}`) Replay
+                th
+                  a(data-type="a_replay-a" href=`${item.token}`) Replay-A
+                th
+                  a(data-type="a_replay-c" href=`${item.token}`) Replay-C
+                th(data-type="a_replay-f")
+                  a(href=`${item.token}` data-token=`${item.token}`) Replay-F 
+                  input(type="number" placeholder="frag number" data-type="a_replay-f-specify")
+    div(id="second_tab01" class="cp_tabpanel")
+      p 
+        a(href="https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Broadcast") GOTV+ documentation
+        |  by Valve developer community
+        br
+        a(href="https://github.com/utage-tech/csgo-broadcast") Our GOTV+ repository
+        br
+        a(href="https://tech.utage-csgo.com/2019/06/06/gotv-plus/") GOTV+ explaination
+        |  (UTAGE-Tech, Japanese)
+    div(id="third_tab01" class="cp_tabpanel")
+      h2 Developer
+      p Shugo "FlowingSPDG" Kawamura
+      p Engineer,Observer,Streaming,CSGO-AR and others. CSGO Japan League 
+        a(href="https://utage-csgo.com") UTAGE
+        | , 
+        a(href="https://fivescup.jp") S5Projects
+        | .
+      a(href="https://flowing.tokyo")
+        | flowing.tokyo
+      br
+      a(href="https://tech.utage-csgo.com")
+        | UTAGE-Tech
+      br
+      | Twitter : 
+      a(href="https://twitter.com/FlowingSPDG")
+        | @FlowingSPDG
+      br
+      | Github : 
+      a(href="https://github.com/FlowingSPDG")
+        | FlowingSPDG
 
   script(src="https://code.jquery.com/jquery-3.4.1.min.js")
   script(src="./public/js/hostname.js")
