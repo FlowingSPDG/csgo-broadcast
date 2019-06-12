@@ -55,7 +55,7 @@ app.get('/replay/:token/:fragment_number/:frametype', function (req:any, res:any
   }
   if (!p) {
     //console.log(p)
-    res.send(404);
+    res.status(404).send('Not found');
   }
   else {
     //console.log(p)
@@ -202,7 +202,7 @@ app.get('/match/:token/:fragment_number/:frametype', function (req:any, res:any)
   }
   if (!p) {
     //console.log(p)
-    res.send(404);
+    res.status(404).send('Not found');
   }
   else {
     //console.log(p)
