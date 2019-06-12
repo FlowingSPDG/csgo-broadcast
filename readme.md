@@ -1,6 +1,7 @@
 ## Counter-Strike: Global Offensive tv_broadcast GOTV+ Server  
 https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Broadcast   
-GOTV+,HTTP and dem based GOTV. Supports CDN,HLAE,Reshade and other external softwere.
+GOTV+,HTTP and dem based GOTV. Supports CDN,HLAE,Reshade and other external softwere.  
+Working sample [here](http://fastly.utage-csgo.com.global.prod.fastly.net/)
 
 # Todo
 
